@@ -91,13 +91,10 @@ namespace Stride.Graphics.Font
 
         protected override Glyph GetGlyph(CommandList commandList, char character, in Vector2 fontSize, bool dumb, out Vector2 fixScaling)
         {
-            Glyph glyph = null;
             fixScaling = Vector2.One;
 
-            if (!CharacterToGlyph.ContainsKey(character))
+            if (!CharacterToGlyph.TryGetValue(character, out var glyph))
                 Logger.Warning($"Character '{character}' is not available in the static font character map");
-            else
-                glyph = CharacterToGlyph[character];
 
             return glyph;
         }
