@@ -1218,13 +1218,25 @@ public:
 		// First try to get the texture filename by relative path, if not valid then use absolute path
 		// (According to FBX doc, resolved first by absolute name, and relative name if absolute name is not valid)
 		auto fileNameToUse = Path::Combine(inputPath, relFileName);
-		if(fileNameToUse->StartsWith("\\\\", StringComparison::Ordinal))
+		if (!File::Exists(fileNameToUse))
 		{
-			logger->Warning(String::Format("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse), (CallerInfo^)nullptr);
+			if(!String::IsNullOrEmpty(absFileName))
+			{
+				fileNameToUse = absFileName;
+			}
 		}
-		if (!File::Exists(fileNameToUse) && !String::IsNullOrEmpty(absFileName))
+		if (!File::Exists(fileNameToUse))
 		{
-			fileNameToUse = absFileName;
+			const int lastIndex = Math::Max(absFileName->LastIndexOf('\\'), absFileName->IndexOf('/'));
+			String^ fileName = absFileName->Substring(lastIndex+1,absFileName->Length - lastIndex - 1);
+			if(!String::IsNullOrEmpty(fileName))
+			{
+				fileNameToUse = Path::Combine(inputPath, fileName);
+			}
+		}
+		if (!File::Exists(fileNameToUse))
+		{
+			logger->Error(String::Format("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse), (CallerInfo^)nullptr);
 		}
 
 		// Make sure path is absolute
@@ -1913,7 +1925,7 @@ private:
 	List<String^>^ ExtractTextureDependenciesNoInit()
 	{
 		auto textureNames = gcnew List<String^>();
-			
+
 		auto textureCount = scene->GetTextureCount();
 		for(int i=0; i<textureCount; ++i)
 		{

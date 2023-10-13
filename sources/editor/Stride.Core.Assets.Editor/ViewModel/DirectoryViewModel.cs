@@ -53,7 +53,7 @@ namespace Stride.Core.Assets.Editor.ViewModel
         /// <summary>
         /// Gets the path of this directory in its current package.
         /// </summary>
-        public override string Path => Parent.Path + Name + (Name.Length > 0 ? Separator : "");
+        public override string Path => Parent?.Path + Name + (Name.Length > 0 ? Separator : "");
 
         /// <summary>
         /// Gets or sets the parent directory of this directory.
