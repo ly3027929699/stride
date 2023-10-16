@@ -11,6 +11,6 @@ xcopy %srcDir% %publishDir%\  /q /e /r /S /Y
 cd ..\pulish-stride
 git add .
 git commit -m "."
-git push -u origin
+git push -u cal
 echo "finish"
 pause
